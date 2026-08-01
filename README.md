@@ -1,5 +1,7 @@
 # ResearchMind AI: Scientific Research Gap Identifier Platform
 
+**Live Website:** [https://sivarxdhoni-cmd.github.io/ResearchAI/](https://sivarxdhoni-cmd.github.io/ResearchAI/)
+
 ResearchMind AI is an enterprise-grade AI assistant designed to accelerate literature reviews, map scientific citation relations, detect methodology overlaps, compute Innovation Scores, and draft publication proposals.
 
 Designed for Final Year Projects, Smart India Hackathon (SIH) demonstrations, IEEE publications, and Startup MVPs.
