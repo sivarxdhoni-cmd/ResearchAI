@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Adjust path to import local modules when run directly
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import uvicorn
 import logging
 from fastapi import FastAPI
