@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # Relational Database
+  db:
+    image: postgres:15-alpine
+    container_name: researchmind_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: researchmind
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Task Queue Broker & Cache
+  redis:
+    image: redis:7-alpine
+    container_name: researchmind_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # Graph Database
+  neo4j:
+    image: neo4j:5-community
+    container_name: researchmind_neo4j
+    restart: always
+    ports:
+      - "7474:7474" # Neo4j HTTP dashboard
+      - "7687:7687" # Neo4j Bolt protocol
+    environment:
+      NEO4J_AUTH: neo4j/password123
+    volumes:
+      - neo4j_data:/data
+
+  # FastAPI Backend Service
+  backend:
+    build:
+      context: ../
+      dockerfile: deployment/Dockerfile.backend
+    container_name: researchmind_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespassword
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=researchmind
+      - REDIS_URL=redis://redis:6379/0
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=password123
+      - LLM_PROVIDER=ollama
+      - LLM_BASE_URL=http://host.docker.internal:11434  # Links to host's Ollama instance
+      - LLM_MODEL=qwen2:7b
+    depends_on:
+      - db
+      - redis
+      - neo4j
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - papers_storage:/app/papers
+      - embedding_storage:/app/embeddings
+
+  # React Frontend Nginx Server
+  frontend:
+    build:
+      context: ../
+      dockerfile: deployment/Dockerfile.frontend
+    container_name: researchmind_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  neo4j_data:
+  papers_storage:
+  embedding_storage:

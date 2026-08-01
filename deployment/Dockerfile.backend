@@ -1,0 +1,27 @@
+# Base python image
+FROM python:3.11-slim
+
+# Install system dependencies for fitz/PyMuPDF and psycopg2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy dependency files
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir bcrypt  # Ensure bcrypt is explicitly cached
+
+# Copy source tree
+COPY . .
+
+# Expose backend API port
+EXPOSE 8000
+
+# Command to execute FastAPI server
+CMD ["python", "-m", "uvicorn", "backend.run:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database and state files
+*.db
+knowledge_graph.json
+embeddings/fallback_vectors.json
+embeddings/metadata.json
+
+# Local configurations
+.env
+.env.local
+.env.*.local
+
+# Node dependencies and builds
+node_modules/
+dist/
+build/
+.svelte-kit/
+.next/
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS files
+Thumbs.db
+desktop.ini

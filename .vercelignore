@@ -1,0 +1,20 @@
+# Exclude local directories from deployment bundle zips
+frontend/node_modules/
+node_modules/
+venv/
+.venv/
+env/
+.pytest_cache/
+.git/
+tests/
+reports/
+papers/
+researchmind.db
+knowledge_graph.json
+embeddings/
+*.pdf
+.vercel/
+.vercel_build_output/
+.venv/
+venv/
+node_modules/
