@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { api } from "../services/api";
-import { Shield, Mail, Lock, User, GraduationCap, CheckCircle } from "lucide-react";
+import { Shield, Mail, Lock, User, GraduationCap, CheckCircle, Settings } from "lucide-react";
 
 interface AuthProps {
   onLoginSuccess: () => void;
@@ -16,6 +16,19 @@ export const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const [showSettings, setShowSettings] = useState(false);
+  const [customApiUrl, setCustomApiUrl] = useState(localStorage.getItem("custom_api_url") || "");
+
+  const handleSaveSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (customApiUrl.trim()) {
+      localStorage.setItem("custom_api_url", customApiUrl.trim());
+    } else {
+      localStorage.removeItem("custom_api_url");
+    }
+    window.location.reload();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,6 +188,42 @@ export const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
           >
             {isLogin ? "Register here" : "Sign in here"}
           </button>
+        </div>
+
+        {/* API Endpoint Settings */}
+        <div className="mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-800/50 text-center">
+          <button
+            type="button"
+            onClick={() => setShowSettings(!showSettings)}
+            className="text-[10px] text-slate-400 hover:text-indigo-400 font-bold inline-flex items-center gap-1 outline-none"
+          >
+            <Settings className="w-3 h-3" />
+            {showSettings ? "Hide API Settings" : "Configure Custom API Endpoint"}
+          </button>
+
+          {showSettings && (
+            <form onSubmit={handleSaveSettings} className="mt-3 text-left space-y-2">
+              <label className="text-[9px] uppercase font-bold tracking-wider text-slate-400 block">Custom API URL</label>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  placeholder="http://localhost:8000/api/v1"
+                  value={customApiUrl}
+                  onChange={(e) => setCustomApiUrl(e.target.value)}
+                  className="flex-1 px-3 py-1.5 text-xs bg-slate-100/50 dark:bg-[#0b101c]/50 border border-slate-200/50 dark:border-slate-800/80 rounded-lg outline-none focus:border-indigo-500 transition-all text-slate-700 dark:text-slate-300"
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs rounded-lg transition-all"
+                >
+                  Save
+                </button>
+              </div>
+              <p className="text-[9px] text-slate-400">
+                Specify a custom API endpoint (e.g. your deployed Vercel backend). Leave empty to use local defaults. Saves to localStorage and reloads page.
+              </p>
+            </form>
+          )}
         </div>
       </div>
     </div>

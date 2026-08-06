@@ -1,12 +1,21 @@
-const isLocal = 
-  window.location.hostname === "localhost" || 
-  window.location.hostname === "127.0.0.1" || 
-  window.location.port !== "" ||
-  window.location.protocol === "file:";
+const getBaseUrl = (): string => {
+  const customUrl = localStorage.getItem("custom_api_url");
+  if (customUrl) {
+    return customUrl.replace(/\/+$/, "");
+  }
 
-const BASE_URL = import.meta.env.VITE_API_URL || (isLocal 
-  ? `http://${window.location.hostname || "localhost"}:8000/api/v1` 
-  : "/api/v1");
+  const isLocal = 
+    window.location.hostname === "localhost" || 
+    window.location.hostname === "127.0.0.1" || 
+    window.location.port !== "" ||
+    window.location.protocol === "file:";
+
+  return import.meta.env.VITE_API_URL || (isLocal 
+    ? `http://${window.location.hostname || "localhost"}:8000/api/v1` 
+    : "/api/v1");
+};
+
+const BASE_URL = getBaseUrl();
 
 // Helper to inject JWT token in Authorization Header
 const getHeaders = (isMultipart = false) => {
