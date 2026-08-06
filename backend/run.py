@@ -23,6 +23,19 @@ logger = logging.getLogger("researchmind")
 logger.info("Initializing relational database tables...")
 Base.metadata.create_all(bind=engine)
 
+# Auto-seed database if empty
+try:
+    from backend.app.db.session import SessionLocal
+    from backend.app.db.models import User
+    db = SessionLocal()
+    if db.query(User).count() == 0:
+        logger.info("Database is empty. Running auto-seeding...")
+        from database.seed_data import seed_db
+        seed_db()
+    db.close()
+except Exception as e:
+    logger.error(f"Failed to auto-seed database: {e}")
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
@@ -32,9 +45,17 @@ app = FastAPI(
 )
 
 # CORS configuration
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://sivarxdhoni-cmd.github.io"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify React domain (e.g. http://localhost:5173)
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

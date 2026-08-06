@@ -1,11 +1,12 @@
 const isLocal = 
   window.location.hostname === "localhost" || 
   window.location.hostname === "127.0.0.1" || 
-  window.location.port !== "";
+  window.location.port !== "" ||
+  window.location.protocol === "file:";
 
-const BASE_URL = isLocal 
-  ? `http://${window.location.hostname}:8000/api/v1` 
-  : "/api/v1";
+const BASE_URL = import.meta.env.VITE_API_URL || (isLocal 
+  ? `http://${window.location.hostname || "localhost"}:8000/api/v1` 
+  : "/api/v1");
 
 // Helper to inject JWT token in Authorization Header
 const getHeaders = (isMultipart = false) => {
